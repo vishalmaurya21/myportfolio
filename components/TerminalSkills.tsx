@@ -3,18 +3,20 @@
 import { useEffect, useRef, useState } from 'react';
 
 const LINES = [
-  { type: 'prompt',  text: '$ whoami' },
-  { type: 'output',  text: 'vishal_maurya  →  Backend Engineer' },
-  { type: 'blank',   text: '' },
-  { type: 'prompt',  text: '$ skills --category languages' },
-  { type: 'tag',     text: '  [java]  [python]  [php]' },
-  { type: 'prompt',  text: '$ skills --category frameworks' },
-  { type: 'tag',     text: '  [spring-boot]  [laravel]' },
-  { type: 'prompt',  text: '$ skills --category databases' },
-  { type: 'tag',     text: '  [mysql]  [mongodb]' },
-  { type: 'prompt',  text: '$ skills --category devops' },
-  { type: 'tag',     text: '  [git]  [docker]' },
-  { type: 'blank',   text: '' },
+  { type: 'prompt', text: '$ whoami' },
+  { type: 'output', text: 'vishal_maurya  →  Backend Engineer' },
+  { type: 'blank', text: '' },
+  { type: 'prompt', text: '$ skills --category languages' },
+  { type: 'tag', text: '  [java]  [python]  [php]' },
+  { type: 'prompt', text: '$ skills --category frameworks' },
+  { type: 'tag', text: '  [spring-boot]  [laravel]' },
+  { type: 'prompt', text: '$ skills --category databases' },
+  { type: 'tag', text: '  [mysql]  [mongodb]' },
+  { type: 'prompt', text: '$ skills --category devops' },
+  { type: 'tag', text: '  [git]  [docker]  [linux]' },
+  // { type: 'prompt', text: '$ skills --category Tools' },
+  // { type: 'tag', text: '  [git]  [docker]  [linux]' },
+  { type: 'blank', text: '' },
   { type: 'success', text: '\u2713  status: available_for_hire  uptime: 99.9%' },
 ];
 
@@ -22,41 +24,41 @@ const CATS = [
   {
     id: 'languages', label: 'Languages', color: '#e31616',
     skills: [
-      { name: 'Java',   level: 85 },
+      { name: 'Java', level: 85 },
       { name: 'Python', level: 75 },
-      { name: 'PHP',    level: 70 },
+      { name: 'PHP', level: 70 },
     ],
   },
   {
     id: 'frameworks', label: 'Frameworks', color: '#3b82f6',
     skills: [
       { name: 'Spring Boot', level: 82 },
-      { name: 'Laravel',     level: 74 },
+      { name: 'Laravel', level: 74 },
     ],
   },
   {
     id: 'databases', label: 'Databases', color: '#10b981',
     skills: [
-      { name: 'MySQL',   level: 85 },
+      { name: 'MySQL', level: 85 },
       { name: 'MongoDB', level: 72 },
     ],
   },
   {
     id: 'devops', label: 'DevOps & Tools', color: '#f59e0b',
     skills: [
-      { name: 'Git',    level: 90 },
+      { name: 'Git', level: 90 },
       { name: 'Docker', level: 75 },
     ],
   },
 ];
 
 export default function TerminalSkills() {
-  const [count, setCount]         = useState(0);
+  const [count, setCount] = useState(0);
   const [activeCat, setActiveCat] = useState('languages');
-  const [barsOn, setBarsOn]       = useState(false);
-  const wrapRef  = useRef<HTMLDivElement>(null);
-  const started  = useRef(false);
-  const tmr      = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [barsOn, setBarsOn] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const started = useRef(false);
+  const tmr = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -97,7 +99,7 @@ export default function TerminalSkills() {
       <div className="ts-terminal" aria-label="Terminal showing backend skills">
         <div className="ts-titlebar">
           <div className="ts-lights">
-            <span className="ts-light ts-close"    aria-hidden="true" />
+            <span className="ts-light ts-close" aria-hidden="true" />
             <span className="ts-light ts-minimize" aria-hidden="true" />
             <span className="ts-light ts-maximize" aria-hidden="true" />
           </div>

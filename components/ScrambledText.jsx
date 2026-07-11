@@ -1,11 +1,20 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { SplitText } from 'gsap-trial/SplitText';
-import { ScrambleTextPlugin } from 'gsap-trial/ScrambleTextPlugin';
 
 import './ScrambledText.css';
 
-gsap.registerPlugin(SplitText, ScrambleTextPlugin);
+// Attempt to load GSAP Club plugins (require gsap license / gsap-trial)
+let SplitText = null;
+let ScrambleTextPlugin = null;
+try {
+  ({ SplitText } = require('gsap/SplitText'));
+  ({ ScrambleTextPlugin } = require('gsap/ScrambleTextPlugin'));
+  if (SplitText && ScrambleTextPlugin) {
+    gsap.registerPlugin(SplitText, ScrambleTextPlugin);
+  }
+} catch {
+  // plugins not available — component renders as plain text
+}
 
 const ScrambledText = ({
   radius = 100,
@@ -20,12 +29,19 @@ const ScrambledText = ({
   const charsRef = useRef([]);
 
   useEffect(() => {
-    if (!rootRef.current) return;
+    // If plugins didn't load, just render plain text — no crash
+    if (!SplitText || !ScrambleTextPlugin || !rootRef.current) return;
 
-    const split = SplitText.create(rootRef.current.querySelector('p'), {
-      type: 'chars',
-      charsClass: 'char'
-    });
+    let split;
+    try {
+      split = SplitText.create(rootRef.current.querySelector('p'), {
+        type: 'chars',
+        charsClass: 'char'
+      });
+    } catch {
+      return;
+    }
+
     charsRef.current = split.chars;
 
     charsRef.current.forEach(c => {
@@ -62,7 +78,7 @@ const ScrambledText = ({
 
     return () => {
       el.removeEventListener('pointermove', handleMove);
-      split.revert();
+      try { split.revert(); } catch { /* ignore */ }
     };
   }, [radius, duration, speed, scrambleChars]);
 

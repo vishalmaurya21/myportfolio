@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import Hyperspeed from "@/components/Hyperspeed";
 import { hyperspeedPresets } from "@/components/HyperSpeedPresets";
 import StaggeredMenu from "@/components/StaggeredMenu";
@@ -8,6 +10,7 @@ import Footer from "@/components/Footer";
 import ScrollStack, { ScrollStackItem } from "@/components/ScrollStack";
 import LoadingScreen from "@/components/LoadingScreen";
 import TerminalSkills from "@/components/TerminalSkills";
+import ScrambledText from "@/components/ScrambledText";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
@@ -101,16 +104,6 @@ function useSectionReveal() {
 }
 
 /* ─── Contact form ───────────────────────────────────── */
-function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault();
-  const form = e.currentTarget;
-  const name = (form.elements.namedItem('name') as HTMLInputElement).value;
-  const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-  const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value;
-  const subject = encodeURIComponent(`Portfolio Contact from ${name}`);
-  const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-  window.location.href = `mailto:iamviishalkumar@gmail.com?subject=${subject}&body=${body}`;
-}
 
 /* ─────────────────────────────────────────────────────── */
 export default function Home() {
@@ -119,6 +112,38 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [formState, setFormState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [formError, setFormError] = useState('');
+
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormState('loading');
+    setFormError('');
+    const form = e.currentTarget;
+    const payload = {
+      name: (form.elements.namedItem('name') as HTMLInputElement).value,
+      email: (form.elements.namedItem('email') as HTMLInputElement).value,
+      message: (form.elements.namedItem('message') as HTMLTextAreaElement).value,
+    };
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setFormState('success');
+        form.reset();
+      } else {
+        setFormState('error');
+        setFormError(json.message || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      setFormState('error');
+      setFormError('Network error. Please check your connection and try again.');
+    }
+  };
 
   const aboutRef = useSectionReveal() as React.RefObject<HTMLElement>;
   const skillsRef = useSectionReveal() as React.RefObject<HTMLElement>;
@@ -205,13 +230,13 @@ export default function Home() {
         {/* ── HERO ─────────────────────────────────────── */}
         <section id="home" className="relative min-h-screen flex items-center px-6 sm:px-8 md:px-24 overflow-hidden">
           <div className="max-w-7xl mx-auto w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center py-28">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center py-16">
 
               {/* ── Left: text ── */}
-              <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-5 lg:pr-4 animate-fade-in">
+              <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-5 lg:pr-4">
 
                 {/* Availability chip */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-foreground/5 border border-foreground/10 backdrop-blur-md">
+                <div className="hero-item hero-item-1 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-foreground/5 border border-foreground/10 backdrop-blur-md">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e31616] opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e31616]" />
@@ -222,18 +247,22 @@ export default function Home() {
                 </div>
 
                 {/* Headline */}
-                <h1 className="text-[clamp(2.6rem,9vw,7rem)] font-black tracking-tighter text-foreground leading-[0.88] select-none uppercase">
+                <h1 className="hero-item hero-item-2 text-[clamp(2.6rem,9vw,7rem)] font-black tracking-tighter text-foreground leading-[0.88] select-none uppercase">
                   API<br />
                   <span className="text-transparent stroke-text">ARTISAN.</span>
                 </h1>
 
                 {/* Tagline — short and punchy */}
-                <p className="text-[clamp(0.9rem,1.6vw,1.1rem)] text-muted-foreground leading-relaxed max-w-sm">
-                  Crafting scalable APIs, robust systems &amp; backend architectures that power real products.
-                </p>
+                {/* @ts-ignore */}
+                <ScrambledText
+                  className="hero-item hero-item-3 text-[clamp(0.9rem,1.6vw,1.1rem)] text-muted-foreground leading-relaxed max-w-sm"
+                  radius={100} duration={1} speed={0.4} scrambleChars=".:"
+                >
+                  Crafting scalable APIs, robust systems & backend architectures that power real products.
+                </ScrambledText>
 
                 {/* CTAs */}
-                <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+                <div className="hero-item hero-item-4 flex flex-wrap justify-center lg:justify-start gap-3">
                   <a
                     href="#projects"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-[#e31616] text-white font-bold tracking-widest uppercase text-xs rounded-xl hover:bg-[#c41010] transition-all duration-300 hover:-translate-y-1"
@@ -252,7 +281,7 @@ export default function Home() {
 
               {/* ── Right: floating JSON API card ── */}
 
-              <div className="hidden lg:flex justify-center items-center">
+              <div className="hidden lg:flex justify-center items-center hero-item hero-item-5">
                 <div className="hero-api-card">
                   {/* Title bar */}
                   <div className="hero-card-titlebar">
@@ -295,25 +324,52 @@ export default function Home() {
         <section
           id="about"
           ref={aboutRef as React.Ref<HTMLElement>}
-          className="py-14 sm:py-20 px-6 sm:px-8 md:px-24 bg-background/40 backdrop-blur-xl border-y border-border/50"
+          className="py-10 sm:py-14 px-6 sm:px-8 md:px-24 bg-background/40 backdrop-blur-xl border-y border-border/50"
         >
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-14">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
 
-              <div className="lg:col-span-12 mb-8">
-                <h2 className="text-sm font-mono uppercase tracking-[0.5em] text-[#e31616] mb-4">01 / About Me</h2>
+              <div className="lg:col-span-12 mb-4">
+                <h2 className="text-sm font-mono uppercase tracking-[0.5em] text-[#e31616] mb-3">01 / About Me</h2>
                 <div className="h-px w-24 bg-[#e31616]" />
               </div>
 
               {/* Left col — bio */}
               <div className="lg:col-span-7 space-y-8">
                 <div className="space-y-5 text-[clamp(1.3rem,3.5vw,2.5rem)] font-medium text-foreground leading-[1.1] tracking-tight">
-                  <p>
-                    I am <span className="text-[#e31616]">Vishal Maurya</span>, a Backend Engineer who architects scalable, reliable server-side systems.
-                  </p>
-                  <p className="text-muted-foreground/80">
+                  {/* @ts-ignore */}
+                  <ScrambledText
+                    radius={120}
+                    duration={1.2}
+                    speed={0.5}
+                    scrambleChars=".:"
+                    style={{
+                      fontSize: 'clamp(1.3rem,3.5vw,2.5rem)',
+                      fontWeight: 500,
+                      lineHeight: 1.1,
+                      letterSpacing: '-0.02em',
+                      color: 'var(--foreground)',
+                    }}
+                  >
+                    I am Vishal Maurya, a Backend Engineer who architects scalable, reliable server-side systems.
+                  </ScrambledText>
+                  {/* @ts-ignore */}
+                  <ScrambledText
+                    radius={120}
+                    duration={1.2}
+                    speed={0.5}
+                    scrambleChars=".:"
+                    style={{
+                      fontSize: 'clamp(1.3rem,3.5vw,2.5rem)',
+                      fontWeight: 500,
+                      lineHeight: 1.1,
+                      letterSpacing: '-0.02em',
+                      color: 'var(--muted-foreground)',
+                      opacity: 0.8,
+                    }}
+                  >
                     From designing REST APIs to managing databases at scale — I build the invisible infrastructure that powers great digital products.
-                  </p>
+                  </ScrambledText>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-border/50">
@@ -338,13 +394,13 @@ export default function Home() {
                       title: 'Security First',
                       desc: 'Implementing JWT auth, input validation, SQL injection prevention, and secure API gateways.',
                     },
-                  ].map(t => (
-                    <div key={t.title} className="space-y-4">
+                  ].map((t, i) => (
+                    <div key={t.title} className={`space-y-3 about-card about-card-${i + 1}`}>
                       <div className="flex items-center gap-3 text-[#e31616]">
                         {t.icon}
                         <h3 className="font-bold uppercase tracking-wider text-sm">{t.title}</h3>
                       </div>
-                      <p className="text-muted-foreground leading-relaxed">{t.desc}</p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">{t.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -385,7 +441,7 @@ export default function Home() {
                     { key: 'languages', val: 'Java · Python · PHP' },
                     { key: 'frameworks', val: 'Spring Boot · Laravel' },
                     { key: 'databases', val: 'MySQL · MongoDB' },
-                    { key: 'devops', val: 'Git · Docker' },
+                    { key: 'devops', val: 'Git · Docker · linux' },
                     { key: 'status', val: 'available' },
                   ].map(r => (
                     <div key={r.key} className="flex justify-between text-[11px]">
@@ -403,27 +459,31 @@ export default function Home() {
         <section
           id="skills"
           ref={skillsRef as React.Ref<HTMLElement>}
-          className="py-12 sm:py-18 px-6 sm:px-8 md:px-24 bg-background/10"
+          className="py-10 sm:py-14 px-6 sm:px-8 md:px-24 bg-background/10"
         >
           <div className="max-w-7xl mx-auto">
             <div className="lg:col-span-12 mb-10">
               <h2 className="text-sm font-mono uppercase tracking-[0.5em] text-[#e31616] mb-4">02 / Skills</h2>
               <h3 className="text-[clamp(2.5rem,7vw,5rem)] font-black text-foreground tracking-tighter">TECH STACK</h3>
-              <p className="mt-3 max-w-lg text-muted-foreground text-[clamp(0.9rem,1.4vw,1rem)] leading-relaxed">
+              {/* @ts-ignore */}
+              <ScrambledText
+                className="mt-3 max-w-lg text-muted-foreground text-[clamp(0.9rem,1.4vw,1rem)] leading-relaxed"
+                radius={100} duration={1} speed={0.4} scrambleChars=".:"
+              >
                 Backend technologies I work with daily — from language to deployment.
-              </p>
+              </ScrambledText>
             </div>
 
             {/* Terminal + bars */}
             <TerminalSkills />
 
             {/* Architecture strip */}
-            <div className="arch-section mt-16 border-t border-border/30 pt-12">
+            <div className="arch-section mt-10 border-t border-border/30 pt-8">
               <p className="arch-label">&#47;&#47; System Architecture — how I think about backend systems</p>
               <div className="arch-flow">
                 {archNodes.map((node, i) => (
-                  <>
-                    <div key={node.label} className="arch-node" title={node.label}>
+                  <React.Fragment key={node.label}>
+                    <div className={`arch-node arch-node-anim arch-node-anim-${i + 1}`} title={node.label}>
                       <div
                         className="arch-node-icon"
                         style={{ background: node.bg, borderColor: node.border, color: node.color }}
@@ -433,11 +493,11 @@ export default function Home() {
                       <span className="arch-node-label">{node.label}</span>
                     </div>
                     {i < archNodes.length - 1 && (
-                      <div key={`arrow-${i}`} className="arch-arrow">
+                      <div className="arch-arrow">
                         <ArrowRight className="w-4 h-4" />
                       </div>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </div>
             </div>
@@ -448,7 +508,7 @@ export default function Home() {
         <section
           id="projects"
           ref={projectsRef as React.Ref<HTMLElement>}
-          className="py-20 sm:py-28 px-8 md:px-24 bg-background/40 backdrop-blur-xl border-t border-border/50"
+          className="py-12 sm:py-16 px-8 md:px-24 bg-background/40 backdrop-blur-xl border-t border-border/50"
         >
           <div className="max-w-7xl mx-auto">
             <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -456,9 +516,13 @@ export default function Home() {
                 <h2 className="text-sm font-mono uppercase tracking-[0.5em] text-[#e31616]">03 / Featured Work</h2>
                 <h3 className="text-[clamp(3rem,8vw,5.5rem)] font-black text-foreground tracking-tighter">PROJECTS</h3>
               </div>
-              <p className="max-w-md text-muted-foreground text-[clamp(1rem,1.5vw,1.125rem)] leading-relaxed">
+              {/* @ts-ignore */}
+              <ScrambledText
+                className="max-w-md text-muted-foreground text-[clamp(1rem,1.5vw,1.125rem)] leading-relaxed"
+                radius={100} duration={1} speed={0.4} scrambleChars=".:"
+              >
                 Backend systems and APIs built to be fast, secure, and production-ready.
-              </p>
+              </ScrambledText>
             </div>
 
             <ScrollStack
@@ -537,7 +601,7 @@ export default function Home() {
         <section
           id="contact"
           ref={contactRef as React.Ref<HTMLElement>}
-          className="py-14 sm:py-20 px-4 sm:px-8 md:px-24 bg-background border-t border-border/30"
+          className="py-10 sm:py-14 px-4 sm:px-8 md:px-24 bg-background border-t border-border/30"
         >
 
           <div className="max-w-7xl mx-auto">
@@ -546,9 +610,13 @@ export default function Home() {
               <h3 className="text-[clamp(2rem,6vw,4rem)] font-black text-foreground tracking-tighter leading-tight">
                 LET'S CONNECT
               </h3>
-              <p className="text-base text-muted-foreground max-w-sm mt-3">
+              {/* @ts-ignore */}
+              <ScrambledText
+                className="text-base text-muted-foreground max-w-sm mt-3"
+                radius={100} duration={1} speed={0.4} scrambleChars=".:"
+              >
                 Open to backend roles and freelance projects — drop me a message.
-              </p>
+              </ScrambledText>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
@@ -558,24 +626,62 @@ export default function Home() {
                 <h4 className="text-base font-bold mb-6 font-mono uppercase tracking-widest text-[#e31616]">
                   Send a Message
                 </h4>
-                <form className="contact-form" onSubmit={handleContactSubmit} noValidate>
-                  <div className="contact-form-group">
-                    <label htmlFor="name" className="contact-form-label">Your Name</label>
-                    <input id="name" name="name" type="text" className="contact-form-input" placeholder="Vishal Maurya" required autoComplete="name" />
+
+                {/* Success state */}
+                {formState === 'success' ? (
+                  <div className="contact-success">
+                    <div className="contact-success-icon">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#27c93f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <p className="contact-success-title">Message sent!</p>
+                    <p className="contact-success-sub">Thanks for reaching out. I'll get back to you as soon as possible.</p>
+                    <button
+                      onClick={() => setFormState('idle')}
+                      className="contact-success-reset"
+                    >
+                      Send another message
+                    </button>
                   </div>
-                  <div className="contact-form-group">
-                    <label htmlFor="email" className="contact-form-label">Email Address</label>
-                    <input id="email" name="email" type="email" className="contact-form-input" placeholder="you@example.com" required autoComplete="email" />
-                  </div>
-                  <div className="contact-form-group">
-                    <label htmlFor="message" className="contact-form-label">Message</label>
-                    <textarea id="message" name="message" className="contact-form-textarea" placeholder="Tell me about your project — stack, scale, problem..." required />
-                  </div>
-                  <button type="submit" className="contact-form-submit flex items-center gap-3">
-                    <Send className="w-4 h-4" />
-                    Send Message
-                  </button>
-                </form>
+                ) : (
+                  <form className="contact-form" onSubmit={handleContactSubmit} noValidate>
+                    <div className="contact-form-group">
+                      <label htmlFor="name" className="contact-form-label">Your Name</label>
+                      <input id="name" name="name" type="text" className="contact-form-input" placeholder="Vishal Maurya" required autoComplete="name" disabled={formState === 'loading'} />
+                    </div>
+                    <div className="contact-form-group">
+                      <label htmlFor="email" className="contact-form-label">Email Address</label>
+                      <input id="email" name="email" type="email" className="contact-form-input" placeholder="you@example.com" required autoComplete="email" disabled={formState === 'loading'} />
+                    </div>
+                    <div className="contact-form-group">
+                      <label htmlFor="message" className="contact-form-label">Message</label>
+                      <textarea id="message" name="message" className="contact-form-textarea" placeholder="Tell me about your project — stack, scale, problem..." required disabled={formState === 'loading'} />
+                    </div>
+
+                    {formState === 'error' && (
+                      <p className="contact-form-error">{formError}</p>
+                    )}
+
+                    <button
+                      type="submit"
+                      className={`contact-form-submit flex items-center justify-center gap-3${formState === 'loading' ? ' contact-form-submit--loading' : ''}`}
+                      disabled={formState === 'loading'}
+                    >
+                      {formState === 'loading' ? (
+                        <>
+                          <span className="contact-spinner" aria-hidden="true" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          Send Message
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
               </div>
 
               {/* Social / Email */}
