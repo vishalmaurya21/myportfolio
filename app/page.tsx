@@ -11,6 +11,7 @@ import ScrollStack, { ScrollStackItem } from "@/components/ScrollStack";
 import LoadingScreen from "@/components/LoadingScreen";
 import TerminalSkills from "@/components/TerminalSkills";
 import ScrambledText from "@/components/ScrambledText";
+import CurvedLoop from "@/components/CurvedLoop";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
@@ -479,7 +480,14 @@ export default function Home() {
 
             {/* Architecture strip */}
             <div className="arch-section mt-10 border-t border-border/30 pt-8">
-              <p className="arch-label">&#47;&#47; System Architecture — how I think about backend systems</p>
+              <div className="mb-10 w-full overflow-hidden" style={{ minHeight: '120px' }}>
+                <CurvedLoop 
+                  marqueeText="// System Architecture — how I think about backend systems ✦ "
+                  speed={2}
+                  curveAmount={250}
+                  className="fill-[#e31616]"
+                />
+              </div>
               <div className="arch-flow">
                 {archNodes.map((node, i) => (
                   <React.Fragment key={node.label}>
