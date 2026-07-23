@@ -1,0 +1,92 @@
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+
+import './ScrambledText.css';
+
+// Attempt to load GSAP Club plugins (require gsap license / gsap-trial)
+let SplitText = null;
+let ScrambleTextPlugin = null;
+try {
+  ({ SplitText } = require('gsap-trial/SplitText'));
+  ({ ScrambleTextPlugin } = require('gsap-trial/ScrambleTextPlugin'));
+  if (SplitText && ScrambleTextPlugin) {
+    gsap.registerPlugin(SplitText, ScrambleTextPlugin);
+  }
+} catch {
+  // plugins not available — component renders as plain text
+}
+
+const ScrambledText = ({
+  radius = 100,
+  duration = 1.2,
+  speed = 0.5,
+  scrambleChars = '.:',
+  className = '',
+  style = {},
+  children
+}) => {
+  const rootRef = useRef(null);
+  const charsRef = useRef([]);
+
+  useEffect(() => {
+    // If plugins didn't load, just render plain text — no crash
+    if (!SplitText || !ScrambleTextPlugin || !rootRef.current) return;
+
+    let split;
+    try {
+      split = SplitText.create(rootRef.current.querySelector('p'), {
+        type: 'chars',
+        charsClass: 'char'
+      });
+    } catch {
+      return;
+    }
+
+    charsRef.current = split.chars;
+
+    charsRef.current.forEach(c => {
+      gsap.set(c, {
+        display: 'inline-block',
+        attr: { 'data-content': c.innerHTML }
+      });
+    });
+
+    const handleMove = e => {
+      charsRef.current.forEach(c => {
+        const { left, top, width, height } = c.getBoundingClientRect();
+        const dx = e.clientX - (left + width / 2);
+        const dy = e.clientY - (top + height / 2);
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < radius) {
+          gsap.to(c, {
+            overwrite: true,
+            duration: duration * (1 - dist / radius),
+            scrambleText: {
+              text: c.dataset.content || '',
+              chars: scrambleChars,
+              speed
+            },
+            ease: 'none'
+          });
+        }
+      });
+    };
+
+    const el = rootRef.current;
+    el.addEventListener('pointermove', handleMove);
+
+    return () => {
+      el.removeEventListener('pointermove', handleMove);
+      try { split.revert(); } catch { /* ignore */ }
+    };
+  }, [radius, duration, speed, scrambleChars]);
+
+  return (
+    <div ref={rootRef} className={`text-block ${className}`} style={style}>
+      <p>{children}</p>
+    </div>
+  );
+};
+
+export default ScrambledText;
