@@ -12,8 +12,10 @@
 }
 
 .scroll-stack-inner {
-  padding: 5vh 1rem 20rem;
-  min-height: 100vh;
+  padding: 5svh clamp(0.75rem, 4vw, 3rem) 20rem;
+  min-height: 100svh;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
