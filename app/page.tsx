@@ -187,7 +187,7 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className="relative min-h-screen font-sans bg-background text-foreground transition-colors duration-300">
+    <div className="portfolio-shell relative min-h-screen font-sans bg-background text-foreground transition-colors duration-300">
 
       <LoadingScreen />
       <a href="#home" className="skip-to-content">Skip to content</a>
@@ -229,7 +229,7 @@ export default function Home() {
       <div className="relative z-10 flex flex-col font-sans">
 
         {/* ── HERO ─────────────────────────────────────── */}
-        <section id="home" className="relative min-h-screen flex items-center px-6 sm:px-8 md:px-24 overflow-hidden">
+        <section id="home" className="hero-section relative min-h-screen flex items-center px-5 sm:px-8 md:px-16 lg:px-24 overflow-hidden">
           <div className="max-w-7xl mx-auto w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center py-16">
 
@@ -512,11 +512,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── PROJECTS ──────────────────────────────────── */}
+        {/* ── PROJECTS ���─────────────────────────────────── */}
         <section
           id="projects"
           ref={projectsRef as React.Ref<HTMLElement>}
-          className="py-12 sm:py-16 px-8 md:px-24 bg-background/40 backdrop-blur-xl border-t border-border/50"
+          className="projects-section py-16 sm:py-20 px-5 sm:px-8 md:px-16 lg:px-24 bg-background/55 backdrop-blur-xl border-t border-border/50"
         >
           <div className="max-w-7xl mx-auto">
             <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">

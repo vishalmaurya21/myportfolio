@@ -19,8 +19,8 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="relative z-10 w-full bg-background/40 backdrop-blur-md border-t border-border py-12">
-            <div className="container mx-auto px-8">
+        <footer className="relative z-10 w-full bg-background/70 backdrop-blur-xl border-t border-border/60 py-16">
+            <div className="container mx-auto px-5 sm:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                     {/* Logo and Tagline */}
                     <div className="flex flex-col space-y-4">
@@ -28,7 +28,7 @@ const Footer = () => {
                             Vishal <span className="text-[#e31616]">Maurya</span>
                         </h2>
                         <p className="text-muted-foreground max-w-xs">
-                            Building modern, high-performance web experiences with a focus on creative coding and seamless animations.
+                            Designing reliable backend systems, thoughtful APIs, and the infrastructure behind useful products.
                         </p>
                     </div>
 
