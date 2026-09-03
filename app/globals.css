@@ -124,6 +124,20 @@
   /* Smooth scroll for the whole page */
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+
+  img, canvas, svg, video {
+    max-width: 100%;
+  }
+
+  p, h1, h2, h3, h4, a, button, label {
+    overflow-wrap: anywhere;
   }
 
   @keyframes fade-in {
@@ -962,4 +976,80 @@ h2[class*="tracking"] {
 }
 h2[class*="tracking"]:hover {
   letter-spacing: 0.6em;
+}
+
+/* Portfolio refresh: quiet technical surfaces and stronger rhythm */
+.portfolio-shell {
+  --portfolio-accent: #e31616;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+  --portfolio-surface: rgba(var(--card-rgb), 0.58);
+  background-image: linear-gradient(rgba(var(--border-rgb), 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--border-rgb), 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.portfolio-shell section {
+  position: relative;
+}
+
+.portfolio-shell section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(227, 22, 22, 0.35), transparent);
+  pointer-events: none;
+}
+
+.hero-section {
+  min-height: min(900px, 100vh);
+}
+
+.hero-section h1 {
+  text-wrap: balance;
+  text-shadow: 0 16px 60px rgba(0, 0, 0, 0.24);
+}
+
+.projects-section .scroll-stack-card {
+  border: 1px solid rgba(var(--border-rgb), 0.18);
+  background: linear-gradient(145deg, rgba(var(--card-rgb), 0.82), rgba(var(--card-rgb), 0.42));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(14px);
+}
+
+.contact-form-input,
+.contact-form-textarea {
+  border-radius: 10px;
+  background: rgba(var(--card-rgb), 0.55);
+}
+
+.contact-form-submit {
+  border-radius: 10px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+}
+
+@media (max-width: 640px) {
+  .portfolio-shell { background-size: 32px 32px; }
+  .hero-section { min-height: 90svh; padding-top: 5rem; padding-bottom: 5rem; }
+  .hero-section h1 { font-size: clamp(3.5rem, 18vw, 6rem); }
+  .arch-flow { justify-content: flex-start; padding-inline: 0.5rem; }
+  .arch-arrow { padding-inline: 0.15rem; }
+  .contact-form-submit { width: 100%; }
+  .scroll-to-top { right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .hero-section { min-height: 100svh; }
+}
+
+@media (min-width: 1280px) {
+  .portfolio-shell section > div { max-width: 88rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }

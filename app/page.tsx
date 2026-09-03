@@ -110,8 +110,6 @@ function useSectionReveal() {
 export default function Home() {
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [formState, setFormState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [formError, setFormError] = useState('');
@@ -153,14 +151,6 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
-    const onResize = () => {
-      const w = window.innerWidth;
-      setIsMobile(w < 768);
-      setIsTablet(w >= 768 && w < 1024);
-    };
-    onResize();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   useEffect(() => {
@@ -187,7 +177,7 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className="relative min-h-screen font-sans bg-background text-foreground transition-colors duration-300">
+    <div className="portfolio-shell relative min-h-screen font-sans bg-background text-foreground transition-colors duration-300">
 
       <LoadingScreen />
       <a href="#home" className="skip-to-content">Skip to content</a>
@@ -229,7 +219,7 @@ export default function Home() {
       <div className="relative z-10 flex flex-col font-sans">
 
         {/* ── HERO ─────────────────────────────────────── */}
-        <section id="home" className="relative min-h-screen flex items-center px-6 sm:px-8 md:px-24 overflow-hidden">
+        <section id="home" className="hero-section relative min-h-screen flex items-center px-5 sm:px-8 md:px-16 lg:px-24 overflow-hidden">
           <div className="max-w-7xl mx-auto w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center py-16">
 
@@ -325,7 +315,7 @@ export default function Home() {
         <section
           id="about"
           ref={aboutRef as React.Ref<HTMLElement>}
-          className="py-10 sm:py-14 px-6 sm:px-8 md:px-24 bg-background/40 backdrop-blur-xl border-y border-border/50"
+          className="py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 xl:px-20 bg-background/40 backdrop-blur-xl border-y border-border/50"
         >
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
@@ -512,11 +502,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── PROJECTS ──────────────────────────────────── */}
+        {/* ── PROJECTS ���─────────────────────────────────── */}
         <section
           id="projects"
           ref={projectsRef as React.Ref<HTMLElement>}
-          className="py-12 sm:py-16 px-8 md:px-24 bg-background/40 backdrop-blur-xl border-t border-border/50"
+          className="projects-section py-16 sm:py-20 px-5 sm:px-8 md:px-16 lg:px-24 bg-background/55 backdrop-blur-xl border-t border-border/50"
         >
           <div className="max-w-7xl mx-auto">
             <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -535,12 +525,12 @@ export default function Home() {
 
             <ScrollStack
               useWindowScroll={true}
-              itemDistance={isMobile ? 220 : isTablet ? 150 : 100}
-              stackPosition={isMobile ? "10%" : isTablet ? "15%" : "20%"}
-              itemStackDistance={isMobile ? 8 : isTablet ? 12 : 15}
-              itemScale={isMobile ? 0.005 : isTablet ? 0.02 : 0.03}
-              baseScale={isMobile ? 0.98 : isTablet ? 0.95 : 0.9}
-              blurAmount={isMobile ? 0.5 : isTablet ? 1 : 1.5}
+itemDistance={120}
+                  stackPosition="18%"
+                  itemStackDistance={14}
+                  itemScale={0.02}
+                  baseScale={0.94}
+                  blurAmount={1}
             >
               {projects.map((project, index) => (
                 <ScrollStackItem key={index}>
